@@ -1,0 +1,57 @@
+<div>
+    <form method="post">
+        {% csrf_token %}
+        <button name="back">Вернуться на главную страницу</button>
+    </form>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="creategroup" placeholder="Добавить новую группу">
+</form>
+{% if groups %}
+<style>
+.f {
+  display: inline;
+}
+
+</style>
+<div>
+    {% for group in groups %}
+    <h1>{{group.header}}
+        <form method="post">
+            {% csrf_token %}
+            <button value="{{group.id}}" name="deletegroup">Удалить группу</button>
+        </form>
+    </h1>
+    {% for subgroup in group.subgroup.all %}
+        {{subgroup.header}}
+        <form method="post" class="f">
+            {% csrf_token %}
+            <input type="hidden" name="groupid" value="{{group.id}}">
+            <button value="{{subgroup.id}}" name="deletesubgroup">Удалить подгруппу</button>
+        </form>
+        <form method="post" class="f">
+            {% csrf_token %}
+            <button value="{{subgroup.id}}" name="split">Добавить отдел</button>
+        </form>
+            <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="choosedsubgroup" value="{{subgroup.id}}">
+            <select name="group">
+                {% for x in users %}
+                <option>{{x}}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Добавить участника">
+        </form>
+    {% endfor %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="groupid" value="{{group.id}}">
+        <input type="text" name="createsubgroup" placeholder="Создать подгруппу">
+    </form>
+    {% endfor %}
+</div>
+{%else%}
+<h1> На данный момент нет групп </h1>
+{% endif %}

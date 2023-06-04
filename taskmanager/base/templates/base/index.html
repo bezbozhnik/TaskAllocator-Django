@@ -1,0 +1,113 @@
+<div>
+    Здравствуйте, {{request.user.username}}!
+</div>
+<form method="post">{% csrf_token %}
+    <button name="logoutUser">Выйти с аккаунта</button>
+</form>
+<form method="post">
+    {% csrf_token %}
+    <button name="creategroup">Настроить иерархию групп</button>
+</form>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="createtable" placeholder="Добавить новую таблицу">
+</form>
+{% if tables%}
+<html>
+<style>
+table, th, td {
+  border:1px solid black;
+  width:25%;
+}
+th {
+  position: relative;
+}
+td {
+  position: relative;
+}
+
+
+th button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+td button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+td input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+</style>
+<body>
+{% for h in tables%}
+<table>
+    <thead>
+    <tr>
+        <th class="stretch-height">{{h.header}}</th>
+        <th>
+            <form method="post">{% csrf_token %}
+                <button value="{{h.id}}" name="deletetable">Удалить таблицу</button>
+            </form>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Задачи</td>
+        <td>Описание</td>
+    </tr>
+    {% for element in h.task_set.all%}
+    <tr>
+        <form method="post"> {% csrf_token %}
+            <td>{{ element.task_text }}</td>
+            <td>
+                <button value="{{element.id}}" name="delete">Удалить</button>
+            </td>
+        </form>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="choosedtable" value="{{h.id}}">
+                <input type="text" name="create" placeholder="Добавить новую задачу">
+            </form>
+        </td>
+        <td>
+            Press enter
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+{% if arr %}
+<div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="choosedtable" value="{{h.id}}">
+        <select name="group">
+            {% for x in arr %}
+            <option>{{x.header}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Добавить">
+    </form>
+</div>
+{% else %}
+Нет групп, чтобы добавить
+{% endif%}
+{% endfor %}
+{% endif %}
